@@ -1,0 +1,27 @@
+/* Simple styles for the page */
+body {
+    font-family: Arial, sans-serif;
+    color: #333333;
+    padding: 20px;
+}
+
+h1 {
+    color: #0077cc;
+    text-align: center;
+}
+
+p {
+    font-size: 18px;
+    text-align: center;
+}
+
+img {
+    margin-top: 4rem;
+    display: block;
+    width: 100%;
+    max-width: 800px;
+    margin-inline: auto;
+    border: none;
+    border-image-width: 0;
+    outline: none;
+}
