@@ -21,6 +21,16 @@ public:
         m_server_address.sin_port = htons(port);
         m_server_address.sin_addr.s_addr = addr;
 
+#if 1
+        // Allow quick rebinding after closing
+        int opt = 1;
+        if (setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+        {
+            perror("setsockopt failed");
+            exit(EXIT_FAILURE);
+        }
+#endif
+
         bind_socket();
         listen_socket();
     }

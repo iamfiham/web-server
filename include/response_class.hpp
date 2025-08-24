@@ -5,10 +5,11 @@
 #include <fstream>
 #include <vector>
 #include <memory>
+#include <logger.hpp>
+#include <filesystem>
 
 class Response
 {
-private:
     using uCharVect = std::vector<unsigned char>;
 
 private:
@@ -24,12 +25,20 @@ public:
 
         std::string base_location = "static";
 
+        if (std::filesystem::is_directory(path))
+        {
+            std::cout << "[path is a directory] " << path << '\n';
+            return;
+        };
+
         std::ifstream input_file(base_location + '/' + path, std::ios::binary);
+
         if (!input_file.is_open())
         {
-            std::cout << "failed to open " << path << '\n';
+            std::cout << "[failed to open] " << path << '\n';
             return;
         }
+
         input_file.seekg(0, std::ios::end);
         int body_buffer_size = input_file.tellg();
         input_file.seekg(0, std::ios::beg);

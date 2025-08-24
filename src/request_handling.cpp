@@ -8,6 +8,9 @@
 #include <request_handling.hpp>
 #include <unordered_map>
 
+#include <http_parser.hpp>
+#include <logger.hpp>
+
 #define PRINT_LINE(x) std::cout << x << '\n';
 
 std::unordered_map<std::string, std::string> content_type_map{
@@ -38,21 +41,21 @@ std::string get_content_type(const std::string &path)
 
 Response construct_response(const std::string &request_buffer)
 {
-    int start_index = request_buffer.find('/');
-    int end_index = request_buffer.find(' ', start_index);
+    std::unordered_map<std::string, std::string> map = requestParser(request_buffer);
 
-    std::string path = request_buffer.substr(start_index + 1, end_index - start_index - 1);
-
-    if (path.empty())
-        path = "index.html";
+    std::string ep = map["end-point"];
+    std::string path = (ep.size() != 1) ? ep.substr(1) : "index.html";
 
     std::string content_type = get_content_type(path);
 
     return Response(path, content_type);
 };
 
+static int num{};
 void manage_request(int client_socket)
 {
+    ++num;
+    Logger::info("--------requst started--------", num);
     std::string request_buffer{};
     request_buffer.resize(4000);
 
@@ -62,8 +65,9 @@ void manage_request(int client_socket)
     {
         request_buffer.resize(received_bytes);
 
-        PRINT_LINE(request_buffer);
-        PRINT_LINE("---------------------------");
+        Logger::tag("REQUEST start", "", num);
+        std::cout << request_buffer;
+        Logger::tag("REQUEST end", "", num);
 
         Response response_obj{construct_response(request_buffer)};
 
@@ -74,4 +78,5 @@ void manage_request(int client_socket)
     }
 
     close(client_socket);
+    Logger::info("--------requst closed--------", num);
 }
